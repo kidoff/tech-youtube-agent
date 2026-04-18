@@ -1,13 +1,16 @@
 import os
 import requests
+import asyncio
 import google.generativeai as genai
 import edge_tts
-import asyncio
-from moviepy.editor import VideoFileClip, AudioFileClip
+from moviepy.editor import VideoFileClip, AudioFileClip, vfx
+from playwright.sync_api import sync_playwright
 
-# 1. Setup API Keys securely from GitHub Secrets
+# 1. Setup API Keys from GitHub Secrets
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 PIXABAY_KEY = os.environ.get("PIXABAY_API_KEY")
+YOUTUBE_COOKIES = os.environ.get("YOUTUBE_COOKIES") # We will use this later for uploading
+
 genai.configure(api_key=GEMINI_KEY)
 
 # 2. Generate the Script using Gemini
@@ -21,7 +24,7 @@ def generate_script():
 # 3. Create Voice using Edge-TTS
 async def create_voice(text):
     print("Generating Voice...")
-    voice = "en-US-ChristopherNeural" # Deep, professional male voice
+    voice = "en-US-ChristopherNeural" 
     communicate = edge_tts.Communicate(text, voice)
     await communicate.save("voiceover.mp3")
 
@@ -36,16 +39,39 @@ def get_video():
     with open("background.mp4", "wb") as f:
         f.write(vid_data)
 
-# 5. Merge Audio and Video
+# 5. Merge Audio and Video (CRASH FIX APPLIED HERE)
 def make_final_video():
     print("Editing Video...")
     video = VideoFileClip("background.mp4")
     audio = AudioFileClip("voiceover.mp3")
     
-    # Loop video to match audio length
-    final_video = video.set_audio(audio).subclip(0, audio.duration)
-    final_video.write_videofile("final_youtube_short.mp4", fps=24)
+    # FIX: Loop the short Pixabay video so it lasts as long as the Gemini voiceover
+    looped_video = video.fx(vfx.loop, duration=audio.duration)
+    
+    final_video = looped_video.set_audio(audio)
+    final_video.write_videofile("final_youtube_short.mp4", fps=24, codec="libx264", audio_codec="aac")
     print("Video Complete!")
+
+# 6. Upload to YouTube (Skeleton setup for cookies)
+def upload_to_youtube():
+    print("Uploading to YouTube...")
+    if not YOUTUBE_COOKIES:
+        print("Skipping upload: No cookies found. Video saved as final_youtube_short.mp4")
+        return
+
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=True)
+        context = browser.new_context()
+        
+        # This is where your cookies let the bot log in automatically
+        # Note: We will format your cookies properly once you generate them!
+        
+        page = context.new_page()
+        page.goto("https://studio.youtube.com")
+        print("Successfully opened YouTube Studio!")
+        
+        # The exact click instructions go here once cookies are linked.
+        browser.close()
 
 # Run the Bot
 if __name__ == "__main__":
@@ -53,5 +79,4 @@ if __name__ == "__main__":
     asyncio.run(create_voice(script))
     get_video()
     make_final_video()
-    
-    # NOTE: To upload automatically, you will connect your YouTube channel cookies here later!
+    upload_to_youtube()
