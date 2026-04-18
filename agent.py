@@ -1,7 +1,7 @@
 import os
 import requests
 import asyncio
-from google import genai # The 2026 modern package
+from google import genai
 import edge_tts
 from moviepy.editor import VideoFileClip, AudioFileClip, vfx
 
@@ -9,14 +9,15 @@ from moviepy.editor import VideoFileClip, AudioFileClip, vfx
 GEMINI_KEY = os.environ.get("GEMINI_API_KEY")
 PIXABAY_KEY = os.environ.get("PIXABAY_API_KEY")
 
-# 2. Generate the Script using Gemini 3 Flash
+# 2. Generate the Script using Gemini 3 Flash (2026 Standard)
 def generate_script():
     print("Generating Script with Gemini 3 Flash...")
     client = genai.Client(api_key=GEMINI_KEY)
-    prompt = "Write a fast-paced, 45-second YouTube Short script about a hidden smartphone trick. No intro, just the script. Make it highly engaging."
+    prompt = "Write a snappy, 45-second YouTube Short script about a hidden smartphone trick. No intro, just the tip. Make it viral."
     
+    # Updated to the current 2026 model
     response = client.models.generate_content(
-        model='gemini-3-flash', # Using the 2026 current model
+        model='gemini-3-flash', 
         contents=prompt
     )
     return response.text
@@ -45,7 +46,7 @@ def make_final_video():
     video = VideoFileClip("background.mp4")
     audio = AudioFileClip("voiceover.mp3")
     
-    # Loop the short Pixabay video to match the voiceover
+    # Loop video to match audio length
     looped_video = video.fx(vfx.loop, duration=audio.duration)
     
     final_video = looped_video.set_audio(audio)
@@ -57,4 +58,4 @@ if __name__ == "__main__":
     asyncio.run(create_voice(script))
     get_video()
     make_final_video()
-    print("Success! Video is ready.")
+    print("Success! Your daily video is ready.")
