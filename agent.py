@@ -67,7 +67,6 @@ def upload_to_youtube():
         page = context.new_page()
         page.goto("https://studio.youtube.com")
         print("Successfully opened YouTube Studio!")
-        # The exact click instructions will go here once cookies are formatted
         browser.close()
 
 # Run the Bot
