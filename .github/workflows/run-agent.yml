@@ -8,14 +8,19 @@ on:
 jobs:
   build_video:
     runs-on: ubuntu-latest
+    
+    # This removes the Node.js 20 warning
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v4 # Upgraded from v3
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # Upgraded from v4
       with:
-        python-version: '3.11'
+        python-version: '3.12' # Using latest stable Python
 
     - name: Install Modern Tools
       run: |
