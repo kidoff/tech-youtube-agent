@@ -2,8 +2,8 @@ name: Daily YouTube Tech Agent
 
 on:
   schedule:
-    - cron: '30 13 * * *' # 7:00 PM IST (13:30 UTC)
-  workflow_dispatch: # Allows manual testing
+    - cron: '30 13 * * *' # 7:00 PM IST
+  workflow_dispatch: 
 
 jobs:
   build_video:
@@ -13,14 +13,16 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v3
 
+    # FIX 1: Bumped Python to 3.11 to remove warnings
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'
+        python-version: '3.11'
 
+    # FIX 2: Pinned moviepy to version 1.0.3 so it matches our code perfectly
     - name: Install Python Tools
       run: |
-        pip install requests google-generativeai edge-tts moviepy playwright
+        pip install requests google-generativeai edge-tts moviepy==1.0.3 playwright
         playwright install chromium
         playwright install-deps
         sudo apt-get install ffmpeg
