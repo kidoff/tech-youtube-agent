@@ -20,7 +20,7 @@ jobs:
 
     - name: Install Python Tools
       run: |
-        pip install requests google-generativeai edge-tts moviepy==1.0.3 playwright
+        pip install requests google-genai edge-tts moviepy==1.0.3 playwright
         playwright install chromium
         playwright install-deps
         sudo apt-get install ffmpeg
