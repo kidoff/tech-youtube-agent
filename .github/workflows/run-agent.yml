@@ -2,8 +2,8 @@ name: Daily YouTube Tech Agent
 
 on:
   schedule:
-    - cron: '0 9 * * *' # Runs every day at 9:00 AM UTC
-  workflow_dispatch: # Allows you to click a button to run it manually
+    - cron: '30 13 * * *' # 7:00 PM IST (13:30 UTC)
+  workflow_dispatch: # Allows manual testing
 
 jobs:
   build_video:
@@ -18,13 +18,16 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install Tools
+    - name: Install Python Tools
       run: |
-        pip install requests google-generativeai edge-tts moviepy
+        pip install requests google-generativeai edge-tts moviepy playwright
+        playwright install chromium
+        playwright install-deps
         sudo apt-get install ffmpeg
 
     - name: Run AI Agent
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+        YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
       run: python agent.py
