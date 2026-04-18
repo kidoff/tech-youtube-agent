@@ -1,25 +1,29 @@
 name: Daily YouTube Tech Agent
+
 on:
   schedule:
-    - cron: '30 13 * * *'
+    - cron: '30 13 * * *' # 7:00 PM IST
   workflow_dispatch: 
+
 jobs:
   build_video:
     runs-on: ubuntu-latest
+
     steps:
     - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-    - name: Install Tools
+
+    - name: Install Modern Tools
       run: |
-        pip install requests google-genai edge-tts moviepy==1.0.3 playwright
-        playwright install chromium
-        playwright install-deps
+        pip install requests google-genai edge-tts moviepy==1.0.3
         sudo apt-get install ffmpeg
+
     - name: Run AI Agent
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
-        YOUTUBE_COOKIES: ${{ secrets.YOUTUBE_COOKIES }}
       run: python agent.py
