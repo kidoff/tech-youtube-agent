@@ -1,30 +1,22 @@
 name: Daily YouTube Tech Agent
-
 on:
   schedule:
     - cron: '30 13 * * *'
   workflow_dispatch: 
-
 jobs:
   build_video:
     runs-on: ubuntu-latest
-
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
       with:
         python-version: '3.11'
-
-    - name: Install Python Tools
+    - name: Install Tools
       run: |
         pip install requests google-genai edge-tts moviepy==1.0.3 playwright
         playwright install chromium
         playwright install-deps
         sudo apt-get install ffmpeg
-
     - name: Run AI Agent
       env:
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
